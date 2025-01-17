@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Take a Photo</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    video { border: 2px solid #ccc; border-radius: 8px; width: 90%; max-width: 600px; margin-bottom: 10px; }
+    button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    canvas { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Take a Photo</h1>
+  <video id="video" autoplay playsinline></video>
+  <button id="capture">Take Photo</button>
+  <canvas id="canvas"></canvas>
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const capture = document.getElementById('capture');
+
+    // Ask for camera access
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert('Could not access camera: ' + err.message);
+      });
+
+    // Capture photo
+    capture.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL('image/png');
+      // Display photo in a new tab
+      const newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="${imageData}" style="width: 100%;">`;
+    });
+  </script>
+</body>
+</html>
